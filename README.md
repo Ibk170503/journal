@@ -2,7 +2,7 @@
 
 Journal is an app that lets you document your thoughts everyday, with inbuilt questions so you don't run out of what to document.
 
-### Data model created
+### Data model created with ceramic
 
 <details open>
  <summary>Journal.json</summary>
