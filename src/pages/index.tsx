@@ -1,11 +1,14 @@
+import { DataModel } from "@glazed/datamodel";
+import { DIDDataStore } from "@glazed/did-datastore";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Router from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import ConnectModal from "../components/ConnectModal";
 import PreviousJournal from "../components/PreviousJournal";
 import { CeramicContext, CeramicContextValue } from "../context/ceramic";
+import { aliases } from "../db/ceramic";
 
 const SBody = styled.div`
   max-width: 65rem;
@@ -102,78 +105,65 @@ const SDate = styled.p`
 const rawData = [
   {
     title: "Peaches",
-    date: "Wed Feb 17 2016",
-    journal: [
-      "",
-      "Successful leaders understand the importance of goal-setting in everything from long-term vision to short-term motivation. Focusing on your goals helps you to organize your actions and make the most of your ambition and aspirations.",
-      "Character rules. You’re not born with the qualities that make up your character, but they develop as you go through your experiences, your failures, and your wins. Govern your sense of responsibility and responses to events to develop the character you’d like to have.",
-      "There will always be bad days and good days, bad luck and good luck. Through it all, gratitude remains among the most useful tools you can have. It shows you what really matters and what’s important, and it keeps you level-headed and focused on what is important.",
-    ],
+    createdAt: Date.now(),
+    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
   },
   {
     title: "Awesome",
-    date: "Wed Feb 17 2016",
-    journal: [
-      "it was fine",
-      "Successful leaders understand the importance of goal-setting in everything from long-term vision to short-term motivation. Focusing on your goals helps you to organize your actions and make the most of your ambition and aspirations.",
-      "Character rules. You’re not born with the qualities that make up your character, but they develop as you go through your experiences, your failures, and your wins. Govern your sense of responsibility and responses to events to develop the character you’d like to have.",
-      "There will always be bad days and good days, bad luck and good luck. Through it all, gratitude remains among the most useful tools you can have. It shows you what really matters and what’s important, and it keeps you level-headed and focused on what is important.",
-    ],
+    createdAt: Date.now(),
+    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
   },
   {
     title: "Sad",
-    date: "Wed Feb 17 2016",
-    journal: [
-      "it was fine",
-      "Successful leaders understand the importance of goal-setting in everything from long-term vision to short-term motivation. Focusing on your goals helps you to organize your actions and make the most of your ambition and aspirations.",
-      "Character rules. You’re not born with the qualities that make up your character, but they develop as you go through your experiences, your failures, and your wins. Govern your sense of responsibility and responses to events to develop the character you’d like to have.",
-      "There will always be bad days and good days, bad luck and good luck. Through it all, gratitude remains among the most useful tools you can have. It shows you what really matters and what’s important, and it keeps you level-headed and focused on what is important.",
-    ],
+    createdAt: Date.now(),
+    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
   },
   {
     title: "Aching",
-    date: "Wed Feb 17 2016",
-    journal: [
-      "it was fine",
-      "Successful leaders understand the importance of goal-setting in everything from long-term vision to short-term motivation. Focusing on your goals helps you to organize your actions and make the most of your ambition and aspirations.",
-      "Character rules. You’re not born with the qualities that make up your character, but they develop as you go through your experiences, your failures, and your wins. Govern your sense of responsibility and responses to events to develop the character you’d like to have.",
-      "There will always be bad days and good days, bad luck and good luck. Through it all, gratitude remains among the most useful tools you can have. It shows you what really matters and what’s important, and it keeps you level-headed and focused on what is important.",
-    ],
+    createdAt: Date.now(),
+    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
   },
   {
     title: "Aching",
-    date: "Wed Feb 17 2016",
-    journal: [
-      "it was fine",
-      "Successful leaders understand the importance of goal-setting in everything from long-term vision to short-term motivation. Focusing on your goals helps you to organize your actions and make the most of your ambition and aspirations.",
-      "Character rules. You’re not born with the qualities that make up your character, but they develop as you go through your experiences, your failures, and your wins. Govern your sense of responsibility and responses to events to develop the character you’d like to have.",
-      "There will always be bad days and good days, bad luck and good luck. Through it all, gratitude remains among the most useful tools you can have. It shows you what really matters and what’s important, and it keeps you level-headed and focused on what is important.",
-    ],
+    createdAt: Date.now(),
+    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
   },
   {
     title: "Aching",
-    date: "Wed Feb 17 2016",
-    journal: [
-      "it was fine",
-      "Successful leaders understand the importance of goal-setting in everything from long-term vision to short-term motivation. Focusing on your goals helps you to organize your actions and make the most of your ambition and aspirations.",
-      "Character rules. You’re not born with the qualities that make up your character, but they develop as you go through your experiences, your failures, and your wins. Govern your sense of responsibility and responses to events to develop the character you’d like to have.",
-      "There will always be bad days and good days, bad luck and good luck. Through it all, gratitude remains among the most useful tools you can have. It shows you what really matters and what’s important, and it keeps you level-headed and focused on what is important.",
-    ],
+    createdAt: Date.now(),
+    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
   },
 ];
 
 const Home: NextPage = () => {
-  const [data, setData] = useState<{ title: string; date: string }[]>();
-  // const [data, setData] = useState<any>();
-  const [connected, setConnected] = useState(false);
+  const [data, setData] =
+    useState<{ title: string; cid: string; createdAt: number }[]>();
+
   const [openJournal, setOpenJournal] = useState(false);
   const [index, setIndex] = useState(0);
 
   const ceramicContext = useContext(CeramicContext) as CeramicContextValue;
+  const ceramic = ceramicContext?.ceramic;
 
   useEffect(() => {
-    setData(rawData);
-  }, []);
+    if (ceramic) {
+      (async () => {
+        const model = new DataModel({ ceramic, aliases });
+        const journalStore = new DIDDataStore({ ceramic, model });
+
+        const doc = (await journalStore.get("journal")) as {
+          data: { title: string; cid: string; createdAt: number }[];
+        };
+        const data = doc.data;
+        setData(data);
+      })();
+    }
+  }, [ceramic, aliases]);
+
+  function openJournalModal(i: number) {
+    setIndex(i);
+    setOpenJournal(true);
+  }
 
   if (!ceramicContext?.ceramic) {
     return <ConnectModal />;
@@ -181,17 +171,8 @@ const Home: NextPage = () => {
 
   if (openJournal) {
     return (
-      <PreviousJournal
-        journal={data}
-        index={index}
-        setOpenJournal={setOpenJournal}
-      />
+      <PreviousJournal journal={data![index]} setOpenJournal={setOpenJournal} />
     );
-  }
-
-  function openJournalModal(i: number) {
-    setIndex(i);
-    setOpenJournal(true);
   }
 
   return (
@@ -210,14 +191,19 @@ const Home: NextPage = () => {
 
           <SJournals>Your Journals</SJournals>
           <SJournalContainer>
-            {data?.map((journal: any, i: any) => {
-              return (
-                <SJournalBox onClick={() => openJournalModal(i)} key={i}>
-                  <SJournalTitle>{journal.title}</SJournalTitle>
-                  <SDate>{journal.date}</SDate>
-                </SJournalBox>
-              );
-            })}
+            {data?.map(
+              (
+                journal: { title: string; cid: string; createdAt: number },
+                i: number
+              ) => {
+                return (
+                  <SJournalBox onClick={() => openJournalModal(i)} key={i}>
+                    <SJournalTitle>{journal.title}</SJournalTitle>
+                    <SDate>{journal.createdAt.toString()}</SDate>
+                  </SJournalBox>
+                );
+              }
+            )}
           </SJournalContainer>
         </SBody>
       </SContainer>

@@ -1,7 +1,11 @@
+import { DataModel } from "@glazed/datamodel";
+import { DIDDataStore } from "@glazed/did-datastore";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { Web3Storage, File } from "web3.storage";
+import { CeramicContext, CeramicContextValue } from "../context/ceramic";
+import { aliases } from "../db/ceramic";
 
 interface IConnectProps {
   submitModal: boolean;
@@ -87,26 +91,58 @@ const SubmitModal: React.FC<IConnectProps> = ({
   const [title, setTitle] = useState("");
   const [buttonText, setButtonText] = useState("submit");
 
+  const ceramicContext = useContext(CeramicContext) as CeramicContextValue;
+  const ceramic = ceramicContext?.ceramic!;
+
   const submit = async () => {
     setLoading(true);
-    setButtonText("loading...");
-    const d = new Date();
-    const date = d.toDateString();
+    setButtonText("saving...");
 
-    const data = {
-      title: title,
-      date: date,
+    const cidData = {
       journal: journal,
     };
 
     const token = process.env.NEXT_PUBLIC_TOKEN;
-
     const storage = new Web3Storage({ token: token || "" });
-    const buffer = Buffer.from(JSON.stringify(data));
-
+    const buffer = Buffer.from(JSON.stringify(cidData));
     const file = [new File([buffer], "journal.json")];
 
+    //get cid from web3.storage
     const cid = await storage.put(file, { wrapWithDirectory: false });
+
+    //send data to ceramic node
+    const model = new DataModel({ ceramic, aliases });
+    const journalStore = new DIDDataStore({ ceramic, model });
+
+    const doc = (await journalStore.get("journal")) as {
+      data: { title: string; cid: string; createdAt: number }[];
+    };
+
+    setButtonText("almost...");
+
+    let journals: { title: string; cid: string; createdAt: number }[];
+    console.log(doc);
+
+    if (doc && doc.data) {
+      journals = [...doc.data];
+    } else {
+      journals = [];
+    }
+
+    setButtonText("wait...");
+
+    journals.push({ title: "", cid: "", createdAt: 9888 });
+    const data = { data: [...journals] };
+    await journalStore.set("journal", {
+      data: [
+        {
+          title: "w",
+          cid: "wo",
+          createdAt: 999,
+        },
+      ],
+    });
+
     setButtonText("Done!");
     setLoading(false);
     console.log(cid);
