@@ -1,4 +1,93 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1>Journal</h1>
+
+Journal is an app that lets you document your thoughts everyday, with inbuilt questions so you don't run out of what to document.
+
+### Data model created
+
+<details open>
+ <summary>Journal.json</summary>
+
+```sh
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Journal",
+  "required": ["data"],
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "type": "array",
+      "description": "journal entries",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["title", "cid", "createdAt"],
+        "additionalProperties": false,
+        "properties": {
+          "title": { "type": "string", "description": "journal entry title" },
+          "cid": { "type": "string", "description": "journal IPFS CID" },
+          "createdAt": {
+            "type": "integer",
+            "description": "date journal was created"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+</details>
+
+### Use of Web3.storage
+
+<details >
+ <summary>for storing journal data</summary>
+
+```sh
+{
+    const cidData = {
+      journal: journal,
+    };
+
+    const token = process.env.NEXT_PUBLIC_TOKEN;
+    const storage = new Web3Storage({ token: token || "" });
+    const buffer = Buffer.from(JSON.stringify(cidData));
+    const file = [new File([buffer], "journal.json")];
+
+    //get cid from web3.storage
+    const cid = await storage.put(file, { wrapWithDirectory: false });
+}
+```
+
+</details>
+
+<details >
+ <summary>for retrieving journal data</summary>
+
+```sh
+{
+  useEffect(() => {
+    try {
+      fetch(`https://${journal && journal.journalCID}.ipfs.w3s.link/`)
+        .then((results) => results.json())
+        .then((data) => {
+          setJournalEntry(data);
+        });
+    } catch (error) {
+      alert(error);
+    }
+  }, []);
+}
+```
+
+</details>
+
+### Screenshots
+
+![Alt text](screenshots/1.png?raw=true "1")
+![Alt text](screenshots/2.png?raw=true "2")
+![Alt text](screenshots/3.png?raw=true "3")
 
 ## Getting Started
 
@@ -9,26 +98,3 @@ npm run dev
 # or
 yarn dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
