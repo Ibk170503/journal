@@ -69,7 +69,7 @@ const ConnectModal: React.FC = () => {
       <SConnectModal>
         <SText>
           Journal is an app that lets you document your thoughts everyday, with
-          inbuilt questions so you don't run out of what to document!
+          inbuilt questions so you don&apos;t run out of what to document!
         </SText>
         <SText>Sign up with Metamask by pressing the connect button</SText>
         <div style={{ display: "grid", placeItems: "center" }}>

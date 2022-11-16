@@ -149,7 +149,7 @@ const SubmitModal: React.FC<IConnectProps> = ({
       <SSubmitModal onClick={(e) => e.stopPropagation()}>
         {loading ? (
           <>
-            <SText>Hey there, one last thing before you're done.</SText>
+            <SText>Hey there, one last thing before you&apos;re done.</SText>
             <SText>
               What <SBold>title</SBold> would best fit your journal entry for
               today?
@@ -165,9 +165,8 @@ const SubmitModal: React.FC<IConnectProps> = ({
             <SText>
               Go back{" "}
               <SBold>
-                {" "}
                 <Link href={"/"}>home</Link>
-              </SBold>{" "}
+              </SBold>
             </SText>
           </>
         )}

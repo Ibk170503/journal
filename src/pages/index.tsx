@@ -165,7 +165,7 @@ const Home: NextPage = () => {
         <SBody>
           <SAddJournal onClick={() => Router.push("/add-journal")}>
             <SImg src="/Add.svg" alt="" />
-            <SAddText>Add Today's journal</SAddText>
+            <SAddText>Add Today&apos;s journal</SAddText>
           </SAddJournal>
 
           <SJournals>Your Journals</SJournals>

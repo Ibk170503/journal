@@ -40,3 +40,4 @@ export const darkTheme: INewTheme = {
 };
 
 export type ThemeType = typeof darkTheme;
+
