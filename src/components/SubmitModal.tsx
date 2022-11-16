@@ -118,10 +118,7 @@ const SubmitModal: React.FC<IConnectProps> = ({
       data: { title: string; cid: string; createdAt: number }[];
     };
 
-    setButtonText("almost...");
-
     let journals: { title: string; cid: string; createdAt: number }[];
-    console.log(doc);
 
     if (doc && doc.data) {
       journals = [...doc.data];
@@ -129,7 +126,7 @@ const SubmitModal: React.FC<IConnectProps> = ({
       journals = [];
     }
 
-    setButtonText("wait...");
+    setButtonText("almost...");
 
     journals.push({ title, cid, createdAt: Date.now() });
     const data = { data: [...journals] };
@@ -137,7 +134,6 @@ const SubmitModal: React.FC<IConnectProps> = ({
 
     setButtonText("Done!");
     setLoading(false);
-    console.log(data);
   };
 
   if (!submitModal) {

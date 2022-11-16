@@ -74,7 +74,6 @@ const PreviousJournal: React.FC<IData> = ({ journal, setOpenJournal }) => {
   }>();
 
   useEffect(() => {
-    console.log(journal.journalCID);
     try {
       fetch(`https://${journal && journal.cid}.ipfs.w3s.link/`)
         .then((results) => results.json())

@@ -3,7 +3,7 @@ import { DIDDataStore } from "@glazed/did-datastore";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Router from "next/router";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import ConnectModal from "../components/ConnectModal";
 import PreviousJournal from "../components/PreviousJournal";
