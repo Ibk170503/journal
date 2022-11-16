@@ -64,6 +64,7 @@ const SJournals = styled.p`
 `;
 
 const SJournalBox = styled.div`
+  max-width: 17rem;
   height: 7.3rem;
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid white;
@@ -102,39 +103,6 @@ const SDate = styled.p`
   margin-right: 5px;
 `;
 
-const rawData = [
-  {
-    title: "Peaches",
-    createdAt: Date.now(),
-    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
-  },
-  {
-    title: "Awesome",
-    createdAt: Date.now(),
-    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
-  },
-  {
-    title: "Sad",
-    createdAt: Date.now(),
-    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
-  },
-  {
-    title: "Aching",
-    createdAt: Date.now(),
-    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
-  },
-  {
-    title: "Aching",
-    createdAt: Date.now(),
-    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
-  },
-  {
-    title: "Aching",
-    createdAt: Date.now(),
-    cid: "bafkreigqou4xxnwt6r3nv4bcfbrafwbxfyr55a4d5k5ha7ir3oieinextu",
-  },
-];
-
 const Home: NextPage = () => {
   const [data, setData] =
     useState<{ title: string; cid: string; createdAt: number }[]>();
@@ -154,7 +122,18 @@ const Home: NextPage = () => {
         const doc = (await journalStore.get("journal")) as {
           data: { title: string; cid: string; createdAt: number }[];
         };
-        const data = doc.data;
+
+        let data: {
+          title: string;
+          cid: string;
+          createdAt: number;
+        }[];
+
+        if (doc) {
+          data = doc.data;
+        } else {
+          data = [];
+        }
         setData(data);
       })();
     }
@@ -199,7 +178,7 @@ const Home: NextPage = () => {
                 return (
                   <SJournalBox onClick={() => openJournalModal(i)} key={i}>
                     <SJournalTitle>{journal.title}</SJournalTitle>
-                    <SDate>{journal.createdAt.toString()}</SDate>
+                    <SDate>{new Date(journal.createdAt).toDateString()}</SDate>
                   </SJournalBox>
                 );
               }

@@ -69,13 +69,14 @@ const SDate = styled.p`
 const PreviousJournal: React.FC<IData> = ({ journal, setOpenJournal }) => {
   const [journalEntry, setJournalEntry] = useState<{
     title: string;
-    date: string;
+    createdAt: number;
     journal: string[];
   }>();
 
   useEffect(() => {
+    console.log(journal.journalCID);
     try {
-      fetch(`https://${journal && journal.journalCID}.ipfs.w3s.link/`)
+      fetch(`https://${journal && journal.cid}.ipfs.w3s.link/`)
         .then((results) => results.json())
         .then((data) => {
           setJournalEntry(data);
@@ -90,7 +91,7 @@ const PreviousJournal: React.FC<IData> = ({ journal, setOpenJournal }) => {
       <SPreviousModal onClick={(e) => e.stopPropagation()}>
         <SDateTitle>
           <STitle>{journal && journal.title}</STitle>
-          <SDate>{journal && journal.date}</SDate>
+          <SDate>{new Date(journal.createdAt).toDateString()}</SDate>
         </SDateTitle>
         <SJournalEntry>
           {journalEntry && (

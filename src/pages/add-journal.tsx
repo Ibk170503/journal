@@ -6,6 +6,7 @@ import Router from "next/router";
 import SubmitModal from "../components/SubmitModal";
 import { CeramicContext, CeramicContextValue } from "../context/ceramic";
 import ConnectModal from "../components/ConnectModal";
+import Link from "next/link";
 
 const SBackground = styled.div`
   position: fixed;
@@ -65,6 +66,13 @@ const STextAnswer = styled.textarea`
   resize: none;
   outline: none;
   color: #5e5d5d;
+`;
+
+const SHome = styled.img`
+  position: fixed;
+  left: 2rem;
+  top: 4rem;
+  width: 1.5rem;
 `;
 
 const AddJournal: NextPage = () => {
@@ -129,6 +137,11 @@ const AddJournal: NextPage = () => {
       </Head>
 
       <SBackground>
+        <Link href={"/"}>
+          <a>
+            <SHome src="/Home.svg" />
+          </a>
+        </Link>
         <SButton onClick={leftArrow}>
           <img src="arrowLeft.svg" alt="" />
         </SButton>

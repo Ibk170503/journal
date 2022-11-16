@@ -131,21 +131,13 @@ const SubmitModal: React.FC<IConnectProps> = ({
 
     setButtonText("wait...");
 
-    journals.push({ title: "", cid: "", createdAt: 9888 });
+    journals.push({ title, cid, createdAt: Date.now() });
     const data = { data: [...journals] };
-    await journalStore.set("journal", {
-      data: [
-        {
-          title: "w",
-          cid: "wo",
-          createdAt: 999,
-        },
-      ],
-    });
+    await journalStore.set("journal", { ...data });
 
     setButtonText("Done!");
     setLoading(false);
-    console.log(cid);
+    console.log(data);
   };
 
   if (!submitModal) {
